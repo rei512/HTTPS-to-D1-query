@@ -28,6 +28,10 @@ export interface Env {
 		return Response.json(results);
 	  }
 
+	  if (pathname === "/api/howmyssl") {
+		return new Response("SSL CONNECTION SUCCESSFULLY!", { status: 200 });
+	  }
+
 	  if (pathname === "/api/insert") {
 		const time = searchParams.get('time');
 		const temp = searchParams.get('temp');
