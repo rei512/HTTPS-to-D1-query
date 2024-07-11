@@ -10,9 +10,47 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+export interface Env {
+	// If you set another name in wrangler.toml as the value for 'binding',
+	// replace "DB" with the variable name you defined.
+	DB: D1Database;
+  }
+  
+  export default {
+	async fetch(request, env): Promise<Response> {
+	  const { pathname, searchParams} = new URL(request.url);
+	  
+	  if (pathname === "/api/show") {
+		// If you did not use `DB` as your binding name, change it here
+		const { results } = await env.DB.prepare(
+		  "SELECT * FROM day"
+		).all();
+		return Response.json(results);
+	  }
 
-export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+	  if (pathname === "/api/insert") {
+		const time = searchParams.get('time');
+		const temp = searchParams.get('temp');
+		const pres = searchParams.get('pres');
+		const humi = searchParams.get('humi');
+  
+		if (!time || !temp || !pres || !humi) {
+		  return new Response("Missing query parameters", { status: 400 });
+		}
+  
+		try {
+		  await env.DB.prepare(
+			"INSERT INTO day (Time, Temperature, Pressure, Humidity) VALUES (?, ?, ?, ?)"
+		  ).bind(time, temp, pres, humi).run();
+  
+		  return new Response("Data inserted successfully", { status: 200 });
+		} catch (error) {
+		  return new Response(`Failed to insert data: ${error.message}`, { status: 500 });
+		}
+	  }
+  
+	  return new Response(
+		"Call /api/beverages to see everyone who works at Bs Beverages"
+	  );
 	},
-} satisfies ExportedHandler<Env>;
+  } satisfies ExportedHandler<Env>;
