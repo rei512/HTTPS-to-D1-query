@@ -20,12 +20,12 @@ export interface Env {
 	async fetch(request, env): Promise<Response> {
 	  const { pathname, searchParams} = new URL(request.url);
 	  
-	  if (pathname === "/api/show") {
+	  if (pathname === "/api/day.json") {
 		// If you did not use `DB` as your binding name, change it here
 		const { results } = await env.DB.prepare(
 		  "SELECT * FROM day"
 		).all();
-		return Response.json(results);
+		return Response.json(results, {headers: {"Access-Control-Allow-Origin": "*"}});
 	  }
 
 	  if (pathname === "/api/howmyssl") {
