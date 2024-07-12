@@ -23,7 +23,7 @@ export interface Env {
 	  if (pathname === "/api/day.json") {
 		// If you did not use `DB` as your binding name, change it here
 		const { results } = await env.DB.prepare(
-		  "SELECT * FROM day"
+		  "SELECT * FROM day ORDER BY Time DESC LIMIT 140"
 		).all();
 		return Response.json(results, {headers: {"Access-Control-Allow-Origin": "*"}});
 	  }
